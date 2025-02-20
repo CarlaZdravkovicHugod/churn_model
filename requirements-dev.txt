@@ -1,0 +1,8 @@
+pre-commit
+kagglehub
+numpy
+torch
+pandas
+h5py
+matplotlib
+torch-utils
