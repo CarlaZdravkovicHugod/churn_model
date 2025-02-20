@@ -21,15 +21,20 @@ class ChurnDataset(Dataset):
         print('Data loaded')
         return self.data
 
-    # TODO:
-    # def visualize(self, idx: int) -> None:
-    #     if self.data is None: self.load_data()
-    #     plt.figure(figsize=(20, 10))
-    #     plt.plot(self.data.iloc[idx])
-    #     plt.show
+    def preprocess_data(self) -> None:
+        self.data.drop(columns=['customerID'])
 
-    # def __len__(self) -> int: return len(self.data)
-    # def __getitem__(self, idx: int) -> tuple[np.ndarray, np.ndarray]: return self.data[idx]
+        # TODO: Map all columns where the only answers are yes and no to 1 and 0
+        #self.data.replace(to_replace={'Yes':1, 'No':0, 'Male':1, 'Female':0})
+        # self.data['Churn'] = self.data['Churn'].map({'Yes': 1, 'No': 0})
+
+        self.data = pd.get_dummies(self.data, columns=['PaymentMethod'])
+        self.data.renamed(columns=lambda x: x.replace("PaymentMethod_", ""), inplace=True)
+        one_hot_columns = self.data.select_dtypes(include=["bool"]).columns
+        self.data[one_hot_columns] = self.data[one_hot_columns].astype(int)
+        self.data['TotalCharges'] = pd.to_numeric(self.data['TotalCharges'], errors='coerce')
+
+        # Define X and y
 
 if __name__ == "__main__":
     dataset = ChurnDataset()
